@@ -10,5 +10,5 @@ urlpatterns = [
     
     
     #Templates urls
-    path('new_food', views.create_food , name = 'create_food'),
+    path('create_food', views.create_food , name = 'create_food'),
 ]

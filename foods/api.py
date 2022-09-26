@@ -8,5 +8,5 @@ from .models import Food
 def food_list_api(request):
     all_foods = Food.objects.all()
     data = FoodSerializer(all_foods, many=True).data
-    context = {'data':data}
+    context = {'food-list':data}
     return Response(context)

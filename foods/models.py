@@ -3,6 +3,7 @@ from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import gettext as _
 from datetime import datetime    
+from django.utils.text import slugify
 
 
 
@@ -18,14 +19,20 @@ class Category(MPTTModel):
 
 class Food(models.Model):
     category = models.ForeignKey( Category, on_delete=models.CASCADE, default=0)
-    title = models.CharField(_("Food Price"), max_length=200)
-    disc = models.CharField(_("Food Price"), max_length=200)
+    title = models.CharField(_("Food title"), max_length=20)
+    disc = models.CharField(_("Food disc"), max_length=200)
     image = models.ImageField(_("Food Image"), upload_to='foods/', height_field=None, width_field=None, max_length=None, default='default/default-food.jpg')
-    slug = models.CharField(_("Food slug"), max_length=200)
     price = models.FloatField(_("Food Price"))
     old_price = models.FloatField(_("Food Price"))
     is_avaible = models.BooleanField(_("Food Avaible"))
     created_at = models.DateTimeField(_("Food Created at"), auto_now=False, auto_now_add=False, default=datetime.now())
+    
+    slug = models.SlugField(blank=True, null=True)
+    
+    def save(self, *args,**kwargs):
+        if not self.slug :
+            self.slug = slugify(self.title)
+        super(Food, self).save(*args,**kwargs)
     
     def __str__(self):
         return self.title

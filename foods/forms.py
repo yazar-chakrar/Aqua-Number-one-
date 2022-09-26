@@ -6,5 +6,5 @@ from .models import Food
 class CreateFoodForm(forms.ModelForm):
     class Meta:
         model = Food
-        fields = ["category","title","disc", "image", "slug", "price", "old_price", "is_avaible"]
+        fields = ["category","title","disc", "image", "price", "old_price", "is_avaible"]
             
