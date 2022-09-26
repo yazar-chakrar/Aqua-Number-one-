@@ -18,6 +18,14 @@ class Category(MPTTModel):
         return self.title
 
 class Food(models.Model):
+    ''' web_id = models.CharField(
+        max_length=50,
+        unique=True,
+        null=False,
+        blank=False,
+        verbose_name=_("product website ID"),
+        help_text=_("format: required, unique"),
+    ) '''
     category = models.ForeignKey( Category, on_delete=models.CASCADE, default=0)
     title = models.CharField(_("Food title"), max_length=20)
     disc = models.CharField(_("Food disc"), max_length=200)

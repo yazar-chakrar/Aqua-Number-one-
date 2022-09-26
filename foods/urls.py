@@ -5,7 +5,12 @@ from . import views, api
 app_name='foods'
 urlpatterns = [
     ##Api urls
-    path('food_list_api', api.food_list_api , name = 'food_list_api'),
+    path('api/foods', api.food_list_api , name = 'food_list_api'),
+    path('api/foods/<int:cat>', api.food_category_api , name = 'food_category_api'),
+    
+    ##Api Class Based View
+    path('api/v2/foods', api.FoodListApi.as_view() , name = 'food_list_v2_api'),
+    path('api/v2/foods/<int:id>', api.FoodDetailApi.as_view() , name = 'food_detail_v2_api'),
     
     
     
