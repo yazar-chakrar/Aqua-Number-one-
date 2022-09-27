@@ -8,9 +8,11 @@ from .models import Food
 #api v2
 from rest_framework import generics
 
-
 @api_view(['GET','POST'])
 def food_list_api(request):
+    """
+    Retrieveor Post a code food.
+    """
     if request.method == 'GET':
         all_foods = Food.objects.all()
         serializer = FoodSerializer(all_foods, many=True)
@@ -24,12 +26,43 @@ def food_list_api(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def food_category_api(request, cat):
+@api_view(['GET','PUT','DELETE'])
+def food_detail_api(request, id):  
+    """
+    Retrieve, update or delete a code food.
+    """
+    try:
+        food = Food.objects.get(id=id)
+    except Food.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
     if request.method == 'GET':
-        food_detail = Food.objects.filter(category=cat)
-        serializer = FoodSerializer(food_detail, many=True)
+        serializer = FoodSerializer(food)
         return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = FoodSerializer(food, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        food.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #############################################
