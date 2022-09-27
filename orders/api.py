@@ -4,6 +4,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
+#api v2
+from rest_framework import generics
 
 ##  Order Lines
 @api_view(['GET','POST'])
@@ -115,3 +117,33 @@ def order_with_lines_detail_api(request, id):
         order = Order.objects.get(id=id)
         serializer = OrdersOlListsSerializer(order)
         return Response(serializer.data)
+
+
+
+
+
+#############################################
+                    #Generics Views v2Api
+#############################################                
+                    
+class OrderLinesListApi(generics.ListCreateAPIView):
+    queryset = OrderLine.objects.all()
+    serializer_class = OrderLineSerializer
+    
+    
+class OrderLineDetailApi(generics.RetrieveUpdateDestroyAPIView):
+    queryset = OrderLine.objects.all()
+    serializer_class = OrderLineSerializer
+    lookup_field = 'order'
+    
+    
+    
+class OrderListApi(generics.ListCreateAPIView):
+    queryset = OrderLine.objects.all()
+    serializer_class = OrderSerializer
+    
+    
+class OrderListApi(generics.RetrieveUpdateDestroyAPIView):
+    queryset = OrderLine.objects.all()
+    serializer_class = OrderSerializer
+    lookup_field = 'id'
