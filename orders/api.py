@@ -119,9 +119,6 @@ def order_with_lines_detail_api(request, id):
         return Response(serializer.data)
 
 
-
-
-
 #############################################
                     #Generics Views v2Api
 #############################################                
