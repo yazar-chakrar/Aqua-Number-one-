@@ -1,9 +1,14 @@
 from django.urls import path
 
+from . import views, api
 
 app_name='books'
 
 urlpatterns = [
-    #path('api/order_lines', api.order_lines_list_api , name = 'order_lines_list_api'),
+        #v2
+    path('api/books', api.book_list_api , name = 'book_list_api'),
+    path('api/book_detail/<int:id>', api.book_detail_api , name = 'book_detail_api'),
+    path('api/book_cats', api.book_cat_list_api , name = 'book_cat_list_api'),
+    path('api/book_cats/<int:id>', api.book_cat_detail_api , name = 'book_cat_detail_api'),
     
 ]
