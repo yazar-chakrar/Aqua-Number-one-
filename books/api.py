@@ -109,3 +109,14 @@ class BookDetailApi(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     lookup_field = 'id'
+    
+    
+class BookCatListApi(generics.ListCreateAPIView):
+    queryset = BookCategory.objects.all()
+    serializer_class = BookCategorySerializer
+    
+    
+class BookCatDetailApi(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BookCategory.objects.all()
+    serializer_class = BookCategorySerializer
+    lookup_field = 'id'
