@@ -10,8 +10,8 @@ from django.utils.text import slugify
 # Create your models here.
 
 class Category(MPTTModel):
-    title = models.CharField(_("Category"), max_length=200)
-    slug = models.CharField(_("Category slug"), max_length=200)
+    title = models.CharField(_("Category"), max_length=50)
+    slug = models.CharField(_("Category slug"), max_length=60)
     parent = TreeForeignKey('self', on_delete=models.PROTECT, null=True, unique=False, blank=True, related_name='children')
     
     def __str__(self):

@@ -58,7 +58,7 @@ def order_list_api(request):
     Retrieveor Post an order.
     """
     if request.method == 'GET':
-        all_orders = Order.objects.all()
+        all_orders = Order.objects.select_related('order_line').all()
         serializer = OrderSerializer(all_orders, many=True)
         return Response(serializer.data)
 
