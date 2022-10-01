@@ -16,7 +16,6 @@ class OrderSerializer(serializers.ModelSerializer):
     lines_count = serializers.IntegerField(read_only=True)
     
 
-
 class OrderLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderLine
