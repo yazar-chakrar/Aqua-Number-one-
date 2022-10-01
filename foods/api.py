@@ -27,12 +27,12 @@ def food_list_api(request):
 
 
 @api_view(['GET','PUT','DELETE'])
-def food_detail_api(request, id):  
+def food_detail_api(request, pk):  
     """
     Retrieve, update or delete a code food.
     """
     try:
-        food = Food.objects.get(id=id)
+        food = Food.objects.get(id=pk)
     except Food.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -50,7 +50,6 @@ def food_detail_api(request, id):
     elif request.method == 'DELETE':
         food.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 
 #############################################

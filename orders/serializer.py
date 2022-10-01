@@ -1,5 +1,9 @@
 from rest_framework import serializers
 from .models import Order, OrderLine
+from foods.models import Food
+from foods.serializer import FoodSerializer
+
+#from ..foods.models import Food
 #from ..foods.serializer import *
 
 
@@ -7,14 +11,25 @@ from .models import Order, OrderLine
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = ['id', 'constumer', 'created_at']
 
 
 class OrderLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderLine
-        fields = "__all__"
-   
+        fields = ['id', 'order', 'food', 'quant', 'line_price']
+
+    line_price = serializers.SerializerMethodField(method_name='cal_line_price')
+    
+    def cal_line_price(self, order_line:OrderLine):
+        return order_line.food.price * order_line.quant
+    
+    ''' order = serializers.HyperlinkedRelatedField(
+        queryset = Order.objects.all(),
+        view_name = 'order-detail'
+        
+    ) '''
+ 
         
 class OrdersOlListsSerializer(OrderSerializer):
     order_lines = serializers.SerializerMethodField()
