@@ -11,7 +11,10 @@ from foods.serializer import FoodSerializer
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'constumer', 'created_at']
+        fields = ['id', 'constumer', 'created_at', 'lines_count']
+        
+    lines_count = serializers.IntegerField(read_only=True)
+    
 
 
 class OrderLineSerializer(serializers.ModelSerializer):
@@ -26,8 +29,7 @@ class OrderLineSerializer(serializers.ModelSerializer):
     
     ''' order = serializers.HyperlinkedRelatedField(
         queryset = Order.objects.all(),
-        view_name = 'order-detail'
-        
+        view_name = 'order-detail', 
     ) '''
  
         

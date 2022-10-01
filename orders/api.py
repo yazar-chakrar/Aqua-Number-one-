@@ -1,6 +1,9 @@
 from .models import OrderLine, Order
+from django.db.models import Count
+from django.shortcuts import get_object_or_404
 from .serializer import *
 from rest_framework import status
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -20,10 +23,9 @@ def order_lines_list_api(request):
 
     elif request.method == 'POST':
         serializer = OrderLineSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
       
     
 @api_view(['GET','PUT','DELETE'])
@@ -42,10 +44,9 @@ def order_line_detail_api(request,pk):
 
     elif request.method == 'PUT':
         serializer = OrderLineSerializer(order_line, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     elif request.method == 'DELETE':
         order_line.delete()
@@ -67,10 +68,9 @@ def order_lines_detail_by_order_api(request,o_pk):
 
     elif request.method == 'PUT':
         serializer = OrderLineSerializer(order_line, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     elif request.method == 'DELETE':
         order_line.delete()
@@ -83,17 +83,15 @@ def order_list_api(request):
     Retrieveor Post an order.
     """
     if request.method == 'GET':
-        all_orders = Order.objects.all()
+        all_orders = Order.objects.annotate(lines_count=Count('order_of_line')).all()
         serializer = OrderSerializer(all_orders, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
         serializer = OrderSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 @api_view(['GET','PUT','DELETE'])
 def order_detail_api(request,pk):
@@ -101,7 +99,7 @@ def order_detail_api(request,pk):
     Retrieve, update or delete a code food.
     """
     try:
-        order = Order.objects.get(id=pk)
+        order = Order.objects.annotate(lines_count=Count('order_of_line')).get(id=pk)
     except Order.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -111,10 +109,9 @@ def order_detail_api(request,pk):
 
     elif request.method == 'PUT':
         serializer = OrderSerializer(order, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     elif request.method == 'DELETE':
         order.delete()
@@ -155,20 +152,50 @@ class OrderLineDetailApi(generics.RetrieveUpdateDestroyAPIView):
     queryset = OrderLine.objects.all()
     serializer_class = OrderLineSerializer
     lookup_field = 'id'
+   
     
 class OrderLineDetailByOrderApi(generics.RetrieveUpdateDestroyAPIView):
     queryset = OrderLine.objects.all()
     serializer_class = OrderLineSerializer
     lookup_field = 'order'
     
-    
-    
+     
 class OrderListApi(generics.ListCreateAPIView):
-    queryset = OrderLine.objects.all()
+    queryset = Order.objects.annotate(lines_count=Count('order_of_line')).all()
     serializer_class = OrderSerializer
     
     
-class OrderListApi(generics.RetrieveUpdateDestroyAPIView):
-    queryset = OrderLine.objects.all()
+class OrderDetailApi(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Order.objects.annotate(lines_count=Count('order_of_line')).all()
     serializer_class = OrderSerializer
-    lookup_field = 'id'
+    
+    def delete(self, request, pk):
+        order = get_object_or_404(Order, pk=pk)
+        if order.order_of_line.count() > 0 :
+            return Response({'Err':'Err Inh'})
+        order.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+#############################################
+                    #ViewSets v3Api
+############################################# 
+
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.annotate(lines_count=Count('order_of_line')).all()
+    serializer_class = OrderSerializer
+    
+    def destroy(self, request, *args, **kwargs):
+        if OrderLine.objects.filter(order_id=kwargs['pk']).count() > 0 :
+            return Response({'Err':'Err Inh'})
+        return super().destroy(request, *args, **kwargs)
+    
+    
+class OrderLineViewSet(ModelViewSet):
+    queryset = OrderLine.objects.all()
+    serializer_class = OrderLineSerializer
+    
+    def destroy(self, request, *args, **kwargs):
+        if OrderLine.objects.filter(order_id=kwargs['pk']).count() > 0 :
+            return Response({'Err':'Err Inh'})
+        return super().destroy(request, *args, **kwargs)
