@@ -20,7 +20,7 @@ class Book(models.Model):
     category = models.ForeignKey(BookCategory, verbose_name=_("Book Category"), on_delete=models.CASCADE, default=0)
     booking_date = models.DateTimeField(_("Booking Time"), auto_now=False, auto_now_add=False)
     duration = models.DurationField(_("Booking duration"))
-    persons = models.IntegerField(_("Number of persens"), max_length=2, default=1)
+    persons = models.IntegerField(_("Number of persens"), default=1)
     
     def __str__(self):
         return str(self.category) + '/' + str(self.constumer) + '/'+ str(self.booking_date)

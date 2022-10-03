@@ -23,7 +23,7 @@ class Order(models.Model):
 class OrderLine(models.Model):
     food = models.ForeignKey("foods.Food", verbose_name=_("Ordred Food"), on_delete=models.PROTECT)
     quant = models.PositiveSmallIntegerField(_("Quantity"))
-    order =  models.ForeignKey(Order, related_name='order_of_line', on_delete=models.PROTECT)
+    order =  models.ForeignKey(Order, related_name='order_of_line', on_delete=models.CASCADE)
     
     @property
     def price_ol(self):
